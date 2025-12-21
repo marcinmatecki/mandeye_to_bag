@@ -1,0 +1,52 @@
+ARG ROS_DISTRO=noetic
+FROM ros:${ROS_DISTRO}-ros-base
+
+ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-lc"]
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    python3-vcstool \
+    python3-rosdep \
+    nlohmann-json3-dev \
+    libpcl-dev \
+    ros-${ROS_DISTRO}-pcl-ros \
+    ros-${ROS_DISTRO}-rosbag \
+    && rm -rf /var/lib/apt/lists/*
+
+# Workspace
+RUN mkdir -p /catkin_ws/src
+WORKDIR /catkin_ws/src
+
+# Copy only what we need for ROS1 conversion
+COPY common/ /catkin_ws/src/common/
+COPY mandeye_to_rosbag1/ /catkin_ws/src/mandeye_to_rosbag1/
+
+# Import Livox dependencies for ROS1 converter
+RUN cd /catkin_ws/src && vcs import --input mandeye_to_rosbag1/livox.repos
+
+# Ensure LASzip exists (some checkouts may not have submodules initialized)
+RUN mkdir -p /catkin_ws/src/common/3rd && \
+    if [ ! -d /catkin_ws/src/common/3rd/LASzip ]; then \
+      git clone --depth 1 https://github.com/LASzip/LASzip.git /catkin_ws/src/common/3rd/LASzip; \
+    fi
+
+# The ROS1 package expects a 'common/' folder inside its package directory.
+# Provide it via symlink to the shared common folder.
+RUN if [ ! -e /catkin_ws/src/mandeye_to_rosbag1/common ]; then \
+      ln -s ../common /catkin_ws/src/mandeye_to_rosbag1/common; \
+    fi
+
+# rosdep (best-effort; skip failures to keep image build robust)
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+    rosdep update && \
+    rosdep install --from-paths /catkin_ws/src --ignore-src -r -y || true
+
+# Build
+WORKDIR /catkin_ws
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && catkin_make
+
+
