@@ -52,8 +52,8 @@ RUN source /opt/ros/noetic/setup.bash && \
 
 WORKDIR /mandeye_ws
 
-COPY .src/common ./src/common
-COPY .src/mandeye_to_rosbag1 ./src/mandeye_to_rosbag1
+COPY ./src/common ./src/common
+COPY ./src/mandeye_to_rosbag1 ./src/mandeye_to_rosbag1
 
 RUN source /opt/ros/noetic/setup.bash && \
     source /ws_livox/devel/setup.bash && \
@@ -91,9 +91,9 @@ RUN python3 -m pip install -U colcon-common-extensions
 
 WORKDIR /mandeye_ws
 
-COPY .src/common ./src/common
+COPY ./src/common ./src/common
 
-COPY .src/mandeye_to_rosbag2 ./src/mandeye_to_rosbag2
+COPY ./src/mandeye_to_rosbag2 ./src/mandeye_to_rosbag2
 
 RUN source /opt/ros/humble/setup.bash && colcon build
 
