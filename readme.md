@@ -100,7 +100,7 @@ docker build --target ros2 -t mandeye-ws_humble .
 5. Docker run
 ```
 cd ~/mandeye_ws/src/mandeye_to_bag
-chmod +x
+chmod +x mandeye-to-ros.sh
 
 For ros1 
 ./mandeye-to-ros.sh input_bag output_folder ros1
