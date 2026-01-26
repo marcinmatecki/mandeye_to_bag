@@ -1,3 +1,6 @@
 [submodule "common/3rd/LASzip"]
-	path = common/3rd/LASzip
+	path = src/common/3rd/LASzip
+	url = https://github.com/LASzip/LASzip.git
+[submodule "src/common/3rd/LASzip"]
+	path = src/common/3rd/LASzip
 	url = https://github.com/LASzip/LASzip.git
