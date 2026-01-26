@@ -96,7 +96,7 @@ docker build --target ros1 -t mandeye-ws_noetic .
 
 For ros2
 
-docker build --target ros1 -t mandeye-ws_humble .
+docker build --target ros2 -t mandeye-ws_humble .
 ```
 
 5. Docker run
