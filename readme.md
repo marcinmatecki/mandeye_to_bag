@@ -67,3 +67,46 @@ rosbag play /home/michal/testPalka.bag
 
 Note: Replace `/home/michal/testPalka.bag` with the path to your converted ROSBag file.
 
+## Using build docker
+
+1. Create a workspace:
+```
+mkdir -p ~/mandeye_ws/src
+```
+
+2. Clone the repository:
+```
+cd ~/mandeye_ws/src
+git clone https://github.com/michalpelka/mandeye_to_bag.git --recursive
+```
+
+3. Initialize third-party repositories:
+```
+cd ~/mandeye_ws/src/mandeye_to_bag
+vcs import --input mandeye_to_rosbag1/livox.repos 
+```
+
+4. Docker build
+```
+cd ~/mandeye_ws/src/mandeye_to_bag
+
+For ros1
+
+docker build --target ros1 -t mandeye-ws_noetic .
+
+For ros2
+
+docker build --target ros1 -t mandeye-ws_humble .
+```
+
+5. Docker run
+```
+cd ~/mandeye_ws/src/mandeye_to_bag
+chmod +x
+
+For ros1 
+./mandeye-to-ros.sh input_bag output_folder ros1
+
+For ros2
+./mandeye-to-ros.sh input_bag output_folder ros2
+```
