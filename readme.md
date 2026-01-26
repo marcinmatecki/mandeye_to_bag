@@ -77,7 +77,7 @@ mkdir -p ~/mandeye_ws/src
 2. Clone the repository:
 ```
 cd ~/mandeye_ws/src
-git clone https://github.com/michalpelka/mandeye_to_bag.git --recursive
+git clone https://github.com/MapsHD/mandeye_to_bag --recursive
 ```
 
 3. Initialize third-party repositories:
@@ -91,11 +91,9 @@ vcs import --input mandeye_to_rosbag1/livox.repos
 cd ~/mandeye_ws/src/mandeye_to_bag
 
 For ros1
-
 docker build --target ros1 -t mandeye-ws_noetic .
 
 For ros2
-
 docker build --target ros2 -t mandeye-ws_humble .
 ```
 
