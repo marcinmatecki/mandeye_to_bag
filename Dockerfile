@@ -52,7 +52,7 @@ RUN source /opt/ros/noetic/setup.bash && \
 
 WORKDIR /mandeye_ws
 
-COPY ./src/mandeye_to_bag/common ./src/common
+COPY ./src/mandeye_to_bag/src/common ./src/common
 COPY ./src/mandeye_to_bag/mandeye_to_rosbag1 ./src/mandeye_to_rosbag1
 
 RUN source /opt/ros/noetic/setup.bash && \
@@ -91,7 +91,7 @@ RUN python3 -m pip install -U colcon-common-extensions
 
 WORKDIR /mandeye_ws
 
-COPY ./src/mandeye_to_bag/common ./src/common
+COPY ./src/mandeye_to_bag/src/common ./src/common
 
 COPY ./src/mandeye_to_bag/mandeye_to_rosbag2 ./src/mandeye_to_rosbag2
 
