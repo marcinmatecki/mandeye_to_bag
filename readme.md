@@ -1,4 +1,4 @@
-# # ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping
+# # hdmapping-to-ros1 | ros1-to-hdmapping | hdmapping-to-ros2| ros2-to-hdmapping
 
 # Simlified instruction
 
