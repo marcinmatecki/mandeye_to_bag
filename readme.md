@@ -1,110 +1,58 @@
-# Tools to Convert Mandeye Data to ROSBag
+# # ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping
 
-This repository contains a simple tool that enables the conversion of Mandeye data to ROSBag.
+# Simlified instruction
 
-[![ROS 1 Build](https://github.com/michalpelka/mandeye_to_bag/actions/workflows/ros1-build.yml/badge.svg)](https://github.com/michalpelka/mandeye_to_bag/actions/workflows/ros1-build.yml)
-[![ROS 2 Build](https://github.com/michalpelka/mandeye_to_bag/actions/workflows/ros2-build.yml/badge.svg)](https://github.com/michalpelka/mandeye_to_bag/actions/workflows/ros2-build.yml)
-
-# ROS 1
-## Building 
-
-To build the tool, follow these steps:
-
-1. Create a ROS1 workspace:
-```
-mkdir -p ~/mandeye_ws/src
+## Step 1 (prepare code)
+```shell
+mkdir -p ~/hdmapping-benchmark
+cd ~/hdmapping-benchmark
+git clone https://github.com/MapsHD/mandeye_to_bag.git --recursive
 ```
 
-2. Clone the repository:
-```
-cd ~/mandeye_ws/src
-git clone https://github.com/michalpelka/mandeye_to_bag.git
-```
-
-3. Initialize third-party repositories:
-```
-cd ~/mandeye_ws/src/mandeye_to_bag
-vcs import --input mandeye_to_bag1/livox.repos 
+## Step 2 (build docker)
+```shell
+cd ~/hdmapping-benchmark/mandeye_to_bag
+docker build -t mandeye-ws_noetic --target ros1 .
+docker build -t mandeye-ws_humble --target ros2 .
 ```
 
-4. Initilize sumbodules
-```
-cd ~/mandeye_ws/src/mandeye_to_bag/mandeye_to_rosbag1
-git submodule update --init --recursive
-```
-5. Install dependencies
-```
-cd ~/mandeye_ws/src/mandeye_to_bag
-rosdep update && rosdep install --from-paths src --ignore-src -r -y
-```
-6. Build the workspace:
-```
-cd ~/mandeye_ws
-catkin_make
+## Step 3 (run docker)
+```shell
+cd ~/hdmapping-benchmark/mandeye_to_bag
+chmod +x mandeye-to-ros.sh 
+./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
+./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
+./mandeye-to-ros.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
+./mandeye-to-ros.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
 ```
 
-## Usage
+## Dependencies
 
-To convert Mandeye data, run the following command:
+```shell
+sudo apt update
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
 ```
-rosrun mandeye_to_rosbag1 mandeye_to_rosbag /media/michal/F318-56A3/continousScanning_0000 /home/michal/testPalka.bag
+## Workspace
+
+```shell
+mkdir -p ~/hdmapping-benchmark
+cd ~/hdmapping-benchmark
+git clone https://github.com/MapsHD/mandeye_to_bag.git --recursive
 ```
-Make sure to replace `/media/michal/F318-56A3/continousScanning_0000` with the path to your Mandeye data and `/home/michal/testPalka.bag` with the path to your desired output ROSBag file.
-
-## Using the Tool with FAST-LIO
-
-To use the tool with FAST-LIO, follow these steps:
-
-1. Launch FAST-LIO in the first terminal (make sure that your workspace is sourced):
-```
-roslaunch fast_lio mapping_avia.launch 
-```
-
-2. Play the converted ROSBag in the second terminal:
-```
-rosbag play /home/michal/testPalka.bag
-```
-
-Note: Replace `/home/michal/testPalka.bag` with the path to your converted ROSBag file.
-
-## Using build docker
-
-1. Create a workspace:
-```
-mkdir -p ~/mandeye_ws/src
+## Docker build
+```shell
+cd ~/hdmapping-benchmark/mandeye_to_bag
+docker build -t mandeye-ws_noetic --target ros1 .
+docker build -t mandeye-ws_humble --target ros2 .
 ```
 
-2. Clone the repository:
-```
-cd ~/mandeye_ws/src
-git clone https://github.com/MapsHD/mandeye_to_bag --recursive
-```
-
-3. Initialize third-party repositories:
-```
-cd ~/mandeye_ws/src/mandeye_to_bag
-vcs import --input mandeye_to_rosbag1/livox.repos 
-```
-
-4. Docker build
-```
-cd ~/mandeye_ws/src/mandeye_to_bag
-
-For ros1
-docker build --target ros1 -t mandeye-ws_noetic .
-
-For ros2
-docker build --target ros2 -t mandeye-ws_humble .
-```
-
-5. Docker run
-```
-cd ~/mandeye_ws/src/mandeye_to_bag
-chmod +x mandeye-to-ros.sh
-
-For ros1 
-./mandeye-to-ros.sh input_bag output_folder ros1
-
-For ros2
-./mandeye-to-ros.sh input_bag output_folder ros2
+## Docker run
+```shell
+cd ~/hdmapping-benchmark/mandeye_to_bag
+chmod +x mandeye-to-ros.sh 
+./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
+./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
+./mandeye-to-ros.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
+./mandeye-to-ros.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
 ```

@@ -1,52 +1,83 @@
 #!/bin/bash
 set -e
 
-DATASET_HOST_PATH="$1"
-BAG_OUTPUT_HOST="$2"
-ROS_VERSION="$3"   # ros1 | ros2
+DATASET_HOST_PATH="$1"          
+BAG_OUTPUT_HOST="$2"             
+ROS_VERSION="$3"                 # ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping
 
 if [[ -z "$DATASET_HOST_PATH" || -z "$BAG_OUTPUT_HOST" || -z "$ROS_VERSION" ]]; then
-  echo "Usage: $0 <dataset_path> <output_path> <ros1|ros2>"
+  echo "Usage: $0 <dataset_path> <output_path> <ros1-to-bag|ros1-to-hdmapping|ros2-to-bag|ros2-to-hdmapping>"
   exit 1
 fi
 
-IMAGE_NAME_ROS1=mandeye-ws_noetic
-IMAGE_NAME_ROS2=mandeye-ws_humble
+POINTCLOUD_TOPIC_ROS1="/livox/lidar"
+IMU_TOPIC_ROS1="/livox/imu"
 
-case "$ROS_VERSION" in
-  ros1)
-    IMAGE_NAME="$IMAGE_NAME_ROS1"
-    ROS_SETUP="source /opt/ros/noetic/setup.bash && source /mandeye_ws/devel/setup.bash"
-    RUN_CMD="rosrun mandeye_to_rosbag1 mandeye_to_rosbag"
-    BAG_NAME="converted.bag"
-    ;;
-  ros2)
-    IMAGE_NAME="$IMAGE_NAME_ROS2"
-    ROS_SETUP="source /opt/ros/humble/setup.bash && source /mandeye_ws/install/setup.bash"
-    RUN_CMD="ros2 run mandeye_to_rosbag2 mandeye_to_rosbag2_node"
-    BAG_NAME="converted"
-    ;;
-esac
+POINTCLOUD_TOPIC_ROS2="/livox/pointcloud"
+IMU_TOPIC_ROS2="/livox/imu"
 
 DATASET_HOST_PATH=$(realpath "$DATASET_HOST_PATH")
 BAG_OUTPUT_HOST=$(realpath "$BAG_OUTPUT_HOST")
+
+DATASET_DIR_HOST=$(dirname "$DATASET_HOST_PATH")
+DATASET_FILE=$(basename "$DATASET_HOST_PATH")  
+DATASET_FOLDER=$(basename "$DATASET_HOST_PATH")     
 
 DATASET_CONTAINER_PATH=/mandeye_ws/dataset
 BAG_OUTPUT_CONTAINER=/mandeye_ws/output
 
 mkdir -p "$BAG_OUTPUT_HOST"
-
 xhost +local:docker >/dev/null
+
+IMAGE_NAME_ROS1="mandeye-ws_noetic"
+IMAGE_NAME_ROS2="mandeye-ws_humble"
+
+case "$ROS_VERSION" in
+  ros1-to-hdmapping)
+    echo "Running ROS1 → HDMapping conversion..."
+    IMAGE_NAME="$IMAGE_NAME_ROS1"
+    ROS_SETUP="source /opt/ros/noetic/setup.bash && source /mandeye_ws/devel/setup.bash"
+    RUN_CMD="rosrun mandeye_to_rosbag1 rosbag_to_mandeye $DATASET_CONTAINER_PATH/$DATASET_FILE $BAG_OUTPUT_CONTAINER --pointcloud_topic $POINTCLOUD_TOPIC_ROS1 --imu_topic $IMU_TOPIC_ROS1"
+    ;;
+
+  ros1-to-bag)
+    echo "Running ROS1 → Bag conversion..."
+    IMAGE_NAME="$IMAGE_NAME_ROS1"
+    ROS_SETUP="source /opt/ros/noetic/setup.bash && source /mandeye_ws/devel/setup.bash"
+    RUN_CMD="rosrun mandeye_to_rosbag1 mandeye_to_rosbag $DATASET_CONTAINER_PATH/$DATASET_FILE $BAG_OUTPUT_CONTAINER/$DATASET_FILE"
+    ;;
+
+  ros2-to-bag)
+    echo "Running ROS2 → Bag conversion..."
+    IMAGE_NAME="$IMAGE_NAME_ROS2"
+    ROS_SETUP="source /opt/ros/humble/setup.bash && source /mandeye_ws/install/setup.bash"
+    RUN_CMD="ros2 run mandeye_to_rosbag2 mandeye_to_rosbag2_node $DATASET_CONTAINER_PATH/$DATASET_FOLDER $BAG_OUTPUT_CONTAINER/$DATASET_FOLDER-ros2/"
+    ;;
+
+  ros2-to-hdmapping)
+    echo "Running ROS2 → HDMapping conversion..."
+    IMAGE_NAME="$IMAGE_NAME_ROS2"
+    ROS_SETUP="source /opt/ros/humble/setup.bash && source /mandeye_ws/install/setup.bash"
+    RUN_CMD="ros2 run mandeye_to_rosbag2 rosbag2_to_mandeye_node $DATASET_CONTAINER_PATH/$DATASET_FILE $BAG_OUTPUT_CONTAINER/$DATASET_FOLDER --pointcloud_topic $POINTCLOUD_TOPIC_ROS2 --imu_topic $IMU_TOPIC_ROS2"
+    ;;
+
+  *)
+    echo "Unknown ROS_VERSION: $ROS_VERSION"
+    echo "Valid options: ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping"
+    exit 1
+    ;;
+esac
 
 docker run -it --rm \
   --network host \
-  -v "$DATASET_HOST_PATH":"$DATASET_CONTAINER_PATH":ro \
+  --user 1000:1000 \
+  -v "$DATASET_DIR_HOST":"$DATASET_CONTAINER_PATH":ro \
   -v "$BAG_OUTPUT_HOST":"$BAG_OUTPUT_CONTAINER" \
   "$IMAGE_NAME" \
   /bin/bash -c "
     set -e &&
     $ROS_SETUP &&
-    $RUN_CMD \
-      $DATASET_CONTAINER_PATH \
-      $BAG_OUTPUT_CONTAINER/$BAG_NAME
+    $RUN_CMD
   "
+
+echo "Conversion finished successfully!"
