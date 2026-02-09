@@ -6,7 +6,7 @@ BAG_OUTPUT_HOST="$2"
 ROS_VERSION="$3"                 # hdmapping-to-ros1| ros1-to-hdmapping | hdmapping-to-ros2| ros2-to-hdmapping
 
 if [[ -z "$DATASET_HOST_PATH" || -z "$BAG_OUTPUT_HOST" || -z "$ROS_VERSION" ]]; then
-  echo "Usage: $0 <dataset_path> <output_path> <ros1-to-bag|ros1-to-hdmapping|ros2-to-bag|ros2-to-hdmapping>"
+  echo "Usage: $0 <dataset_path> <output_path> <hdmapping-to-ros1 | ros1-to-hdmapping | hdmapping-to-ros2 | ros2-to-hdmapping>"
   exit 1
 fi
 
