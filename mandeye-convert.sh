@@ -3,7 +3,7 @@ set -e
 
 DATASET_HOST_PATH="$1"          
 BAG_OUTPUT_HOST="$2"             
-ROS_VERSION="$3"                 # ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping
+ROS_VERSION="$3"                 # hdmapping-to-ros1| ros1-to-hdmapping | hdmapping-to-ros2| ros2-to-hdmapping
 
 if [[ -z "$DATASET_HOST_PATH" || -z "$BAG_OUTPUT_HOST" || -z "$ROS_VERSION" ]]; then
   echo "Usage: $0 <dataset_path> <output_path> <ros1-to-bag|ros1-to-hdmapping|ros2-to-bag|ros2-to-hdmapping>"
@@ -40,14 +40,14 @@ case "$ROS_VERSION" in
     RUN_CMD="rosrun mandeye_to_rosbag1 rosbag_to_mandeye $DATASET_CONTAINER_PATH/$DATASET_FILE $BAG_OUTPUT_CONTAINER --pointcloud_topic $POINTCLOUD_TOPIC_ROS1 --imu_topic $IMU_TOPIC_ROS1"
     ;;
 
-  ros1-to-bag)
+  hdmapping-to-ros1)
     echo "Running ROS1 → Bag conversion..."
     IMAGE_NAME="$IMAGE_NAME_ROS1"
     ROS_SETUP="source /opt/ros/noetic/setup.bash && source /mandeye_ws/devel/setup.bash"
     RUN_CMD="rosrun mandeye_to_rosbag1 mandeye_to_rosbag $DATASET_CONTAINER_PATH/$DATASET_FILE $BAG_OUTPUT_CONTAINER/$DATASET_FILE"
     ;;
 
-  ros2-to-bag)
+  hdmapping-to-ros2)
     echo "Running ROS2 → Bag conversion..."
     IMAGE_NAME="$IMAGE_NAME_ROS2"
     ROS_SETUP="source /opt/ros/humble/setup.bash && source /mandeye_ws/install/setup.bash"
@@ -63,7 +63,7 @@ case "$ROS_VERSION" in
 
   *)
     echo "Unknown ROS_VERSION: $ROS_VERSION"
-    echo "Valid options: ros1-to-bag | ros1-to-hdmapping | ros2-to-bag | ros2-to-hdmapping"
+    echo "Valid options: hdmapping-to-ros1| ros1-to-hdmapping | hdmapping-to-ros2| ros2-to-hdmapping"
     exit 1
     ;;
 esac
