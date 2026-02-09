@@ -20,10 +20,10 @@ docker build -t mandeye-ws_humble --target ros2 .
 ```shell
 cd ~/hdmapping-benchmark/mandeye_to_bag
 chmod +x mandeye-to-ros.sh 
-./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
-./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
-./mandeye-to-ros.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
-./mandeye-to-ros.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
+./mandeye-convert.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
+./mandeye-convert.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
+./mandeye-convert.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
+./mandeye-convert.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
 ```
 
 ## Dependencies
@@ -51,8 +51,8 @@ docker build -t mandeye-ws_humble --target ros2 .
 ```shell
 cd ~/hdmapping-benchmark/mandeye_to_bag
 chmod +x mandeye-to-ros.sh 
-./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
-./mandeye-to-ros.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
-./mandeye-to-ros.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
-./mandeye-to-ros.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
+./mandeye-convert.sh <input_hdmapping_folder> <output_folder> ros1-to-bag
+./mandeye-convert.sh <input_hdmapping_folder> <output_folder> ros2-to-bag
+./mandeye-convert.sh <input_ros1_bag> <output_folder> ros1-to-hdmapping
+./mandeye-convert.sh <input_ros2_folder> <output_folder> ros2-to-hdmapping
 ```
